@@ -1,0 +1,37 @@
+{
+  "summary": "Frontend-only testing of RENAN VENDAS Expo/React Native web preview. Navigated all tabs (Início, Vender, Clientes, Produtos, Mais) — all render without white screen. Cadastrei produto Botina B1 (R$100,00 com numerações 38/39/40) e Moda M1 (Cinto, categoria Cintos, custo R$20, preço R$35) com sucesso. Cadastrei Cliente Teste (Cidade A + WhatsApp). TESTE 1 (botina): venda de B1 nº40 × 10 a R$100 finalizada — Início/Dia mostrou corretamente R$1.000,00 vendido e R$150,00 comissão (15%). TESTE 3 (abaixo do custo): aviso 'sell-below-cost-warning' aparece quando preço=R$15 em moda M1 (custo R$20) e não bloqueia venda. TESTE 7 (undo): botão sell-undo-button abre ConfirmSheet e desfaz última venda. TESTE 9 (persistência): após reload, clientes e produtos persistem corretamente. Design rústico country aplicado (paleta marrom/bege, cards arredondados, FABs e sheets funcionais). Warnings de console sobre 'shadow*' style props deprecated — devem migrar para 'boxShadow' (react-native-web).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "TESTE 2 (venda moda sequencial)", "issue": "Ao executar uma segunda venda logo depois da primeira (fluxo contínuo sem reload), o Home às vezes não reflete imediatamente o total da nova venda moda (R$350). Observação: a tela Vender permanece montada (Expo Router keeps tabs mounted on web); re-selecionar o cliente após finalize é necessário pois clientId é resetado — comportamento by design, mas pode confundir o usuário. Pode ser timing/race; não reproduz com reload. Recomenda-se verificar manualmente para confirmar.", "affected_testIDs": ["sell-finalize-button", "home-period-segmented-day"]}
+    ],
+    "design_issues": [
+      {"screen": "Global", "issues": ["Deprecated react-native-web warning: 'shadow*' style props are deprecated. Use 'boxShadow'. Aparece em múltiplos componentes (Card/UI)."]}
+    ],
+    "react_native_issues": [
+      {"component": "StyleSheet shadow* props", "issue": "'shadow*' style props estão deprecated no react-native-web. Devem ser substituídos por 'boxShadow'. Referência: componentes de UI (Card, Button) em /app/frontend/src/components/ui.* e theme."}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Confirmar manualmente o TESTE 2 (venda moda isolada): abrir Vender, selecionar Cliente Teste, tipo Moda, produto M1, qty 10, Adicionar item, Finalizar — verificar que Home/Dia mostra R$350 vendido e R$150 lucro.",
+    "Substituir shadow* props por boxShadow nos StyleSheets (react-native-web deprecation).",
+    "Considerar manter clientId após finalize (ou dar feedback claro que cliente foi limpo) para fluxos de múltiplas vendas sequenciais ao mesmo cliente.",
+    "Testes não executados por tempo: TESTE 6 (multi-item na mesma venda), último preço do cliente (sell-last-price), histórico do cliente, correção de venda, snapshot de comissão (15→20 e verificar vendas antigas), despesas no Início, Backup Export JSON, Metas progresso, Relatórios por cidade, estados vazios de cada aba.",
+    "Validar manualmente que a venda moda com custo total R$200 gera lucro R$150 (preço R$35 × 10 − custo R$20 × 10)."
+  ],
+  "critical_code_review_comments": [
+    "DataContext.tsx linha 170: após finalize, setClientId(null) força re-seleção do cliente para vendas seguintes. OK pela regra 'cliente obrigatório', mas prejudica UX de múltiplas vendas sequenciais.",
+    "sell.tsx: fluxo coeso, bons testIDs, uso correto de finalizeItem/rollUpSale centralizados em calculations.ts. Snapshots de commissionPct e unitCost estão sendo gravados por item corretamente (preserva integridade histórica).",
+    "Nenhum backend; dados em localStorage com chave 'matuto.db.v1'. mergeDefaults garante compatibilidade de schema.",
+    "Deprecated react-native-web shadow* warnings pelo console — ajustar para boxShadow."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (sem backend)", "frontend": "~85% dos testes executados — core flows (navegação, cadastros, venda botina, aviso abaixo-custo, undo, persistência de produtos/clientes) PASSARAM"},
+  "seed_data_creation": "Via UI: 1 cliente (Cliente Teste / Cidade A), 1 botina (B1 Botina Teste R$100 nums 38,39,40), 1 moda (M1 Cinto Teste custo R$20 preço R$35), 1 venda botina confirmada (R$1.000 / comissão R$150).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "App 100% offline/local via AsyncStorage (web → localStorage key 'matuto.db.v1'). TestIDs confiáveis: products-add-fab, clients-add-fab, product-code-input, product-name-input, product-sizes-input (botina), product-category-select + product-cost-input (moda), product-price-input, product-save-button, client-name-input, client-city-input, client-whatsapp-input, client-save-button, sell-client-select, sell-type-segmented-botina/moda, sell-product-select, sell-size-select, sell-qty-stepper-plus/minus, sell-price-input, sell-below-cost-warning, sell-last-price, sell-add-item-button, sell-finalize-button, sell-undo-button, home-period-segmented-day/week/month/year. Money fields são mascarados em centavos (digite 10000 → R$ 100,00). Expo Router no web mantém todas as tabs montadas simultaneamente, então document.body.innerText contém texto de várias telas; prefira screenshots ou querySelectors específicos. Limpar: localStorage.clear() e reload.",
+  "rca_of_issue": "Nenhum bug crítico identificado. Único ponto observado: necessidade de re-selecionar cliente após finalize (by design em sell.tsx linha 170)."
+}

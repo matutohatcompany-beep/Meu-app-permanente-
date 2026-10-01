@@ -1,0 +1,111 @@
+import {
+  AlertTriangle,
+  ArrowLeft,
+  BadgePercent,
+  Banknote,
+  Calendar,
+  Camera,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  CircleDollarSign,
+  ClipboardList,
+  Copy,
+  Crosshair,
+  Database,
+  Download,
+  Footprints,
+  Gift,
+  History,
+  Home,
+  Image as ImageIcon,
+  Info,
+  MapPin,
+  MessageCircle,
+  Minus,
+  MoreHorizontal,
+  Package,
+  Pencil,
+  Phone,
+  Plus,
+  RotateCcw,
+  Route,
+  Search,
+  Settings,
+  Shirt,
+  ShoppingCart,
+  Target,
+  Trash2,
+  TrendingUp,
+  Undo2,
+  Upload,
+  Users,
+  Wallet,
+  X,
+} from "lucide-react-native";
+
+import { useTheme } from "@/src/theme";
+
+const MAP = {
+  alert: AlertTriangle,
+  back: ArrowLeft,
+  percent: BadgePercent,
+  cash: Banknote,
+  calendar: Calendar,
+  camera: Camera,
+  check: Check,
+  "chevron-down": ChevronDown,
+  "chevron-right": ChevronRight,
+  dollar: CircleDollarSign,
+  clipboard: ClipboardList,
+  copy: Copy,
+  crosshair: Crosshair,
+  database: Database,
+  download: Download,
+  boot: Footprints,
+  gift: Gift,
+  history: History,
+  home: Home,
+  image: ImageIcon,
+  info: Info,
+  pin: MapPin,
+  whatsapp: MessageCircle,
+  minus: Minus,
+  more: MoreHorizontal,
+  package: Package,
+  pencil: Pencil,
+  phone: Phone,
+  plus: Plus,
+  restore: RotateCcw,
+  route: Route,
+  search: Search,
+  settings: Settings,
+  shirt: Shirt,
+  cart: ShoppingCart,
+  target: Target,
+  trash: Trash2,
+  trending: TrendingUp,
+  undo: Undo2,
+  upload: Upload,
+  users: Users,
+  wallet: Wallet,
+  close: X,
+} as const;
+
+export type IconName = keyof typeof MAP;
+
+export function Icon({
+  name,
+  size = 22,
+  color,
+  strokeWidth = 2,
+}: {
+  name: IconName;
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+}) {
+  const { colors } = useTheme();
+  const Cmp = MAP[name];
+  return <Cmp size={size} color={color ?? colors.onSurface} strokeWidth={strokeWidth} />;
+}
